@@ -1,0 +1,27 @@
+body {
+  margin: 0px;
+  padding: 0px;
+  background: #1e1e1e;
+}
+
+#container {
+  padding: 50px;
+}
+
+canvas {
+  position: absolute;
+  border: 1px solid #ffffff55;
+}
+
+#tools {
+  position: absolute;
+  border: 1px solid #ff5500;
+}
+
+#addBtn, #delBtn {
+  width: 30px;
+}
+
+.xyInput {
+  width: 30px;
+}

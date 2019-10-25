@@ -34,8 +34,8 @@ class Vector {
     
     createText = () => {
         ctx.beginPath();
-        ctx.font = '17px Arial';
-        ctx.fillStyle = '#999999';
+        ctx.font = '18px Arial';
+        ctx.fillStyle = '#bbbbbb';
         ctx.fillText(`${this.name} (${this.x}, ${this.y})`, this.dstX + 10, this.dstY);
         ctx.closePath();
     }

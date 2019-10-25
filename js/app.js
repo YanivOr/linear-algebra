@@ -38,8 +38,26 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(loop, 500);
 })
 
+/*****************************************************/
+
 const v = (x, y) => {
   const vectorName = `v${vectorCounter}`;
   vectors[vectorName] = new Vector(x, y, vectorName);
   vectorCounter++;
+}
+
+const remove = (v) => {
+  delete vectors[v];
+}
+
+const add = (v0, v1) => {
+  const x = v0.x + v1.x;
+  const y = v0.y + v1.y;
+  v(x, y);
+}
+
+const sub = (v0, v1) => {
+  const x = v0.x - v1.x;
+  const y = v0.y - v1.y;
+  v(x, y);
 }

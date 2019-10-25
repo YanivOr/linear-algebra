@@ -1,35 +1,45 @@
-const canvasWidth = window.innerWidth - 100
-const canvasHeight = window.innerHeight - 100
+const canvasWidth = window.innerWidth - 100;
+const canvasHeight = window.innerHeight - 100;
 
-let c, ctx
+let c, ctx;
+let vectors = {};
+let vectorCounter = 0;
 
 const createCanvas = () => {
-  c = document.createElement('canvas')
-  c.setAttribute('width', `${canvasWidth}px`)
-  c.setAttribute('height', `${canvasHeight}px`)
-  ctx = c.getContext('2d')
-  document.getElementById('container').appendChild(c)
+  c = document.createElement('canvas');
+  c.setAttribute('width', `${canvasWidth}px`);
+  c.setAttribute('height', `${canvasHeight}px`);
+  ctx = c.getContext('2d');
+  document.getElementById('container').appendChild(c);
 }
 
 clearCanvas = () => {
-  ctx.clearRect(0, 0, canvasWidth, canvasHeight)
-  ctx.clearRect(0, 0, canvasWidth, canvasHeight)
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 }
 
 // Loop
 const loop = () => {
-  clearCanvas()
-  
-  new Grid()
-  new InfoLayout()
+  clearCanvas();
+  new Grid();
+  new InfoLayout();
 
-  new Vector(4, 2)
-  new Vector(3, 7)
+  for (const v in vectors) {
+    if (vectors.hasOwnProperty(v)) {
+      vectors[v].draw();
+    }
+  }
 }
 
 // DOM content loaded
 document.addEventListener('DOMContentLoaded', () => {
-  createCanvas()
-  loop()
-  setInterval(loop, 500)
+  createCanvas();
+  loop();
+  setInterval(loop, 500);
 })
+
+const v = (x, y) => {
+  const vectorName = `v${vectorCounter}`;
+  vectors[vectorName] = new Vector(x, y, vectorName);
+  vectorCounter++;
+}

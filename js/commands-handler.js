@@ -1,12 +1,22 @@
-const newVector = (x, y) => {
-    const vectorName = `v${vectorCounter}`;
-    vectors[vectorName] = new Vector(x, y, vectorName);
-    vectorCounter++;
+const newVector = (x, y, vectorName = null) => {
+    const name = vectorName;
+    vectors[name] = new Vector(x, y, name);
 }
 
-const vectorCreate = (command) => {
-    const [x, y] = command.split(',');
-    newVector(x, y);
+/***************************************/
+
+const vectorCreate = (command) =>{
+    let [vectorName, values] = command.split('=');
+
+    vectorName = vectorName.replace(new RegExp(`(\\s)`, 'g'), '');
+
+    values = values.trim();
+    values = values.replace(new RegExp(`(\\s)+`, 'g'), ' ');
+    values = values.replace(new RegExp(`(\\[)(\\s)*`, 'g'), '');
+    values = values.replace(new RegExp(`(\\s)*(\\])`, 'g'), '');
+
+    const [x, y] = values.split(' ');
+    newVector(x, y, vectorName);
 }
 
 const vectorDelete = (command) => {
@@ -15,7 +25,10 @@ const vectorDelete = (command) => {
 }
 
 const vectorsAddition = (command) => {
-    const [v0, v1] = command.split(',');
+    let [vectorName, expression] = command.split('=');
+
+    vectorName = vectorName.replace(new RegExp(`(\\s)`, 'g'), '');
+    const [v0, v1] = expression.split('+');
 
     if (!vectors[v0] || !vectors[v1]) {
         return;
@@ -24,24 +37,14 @@ const vectorsAddition = (command) => {
     const x = parseInt(vectors[v0].x) + parseInt(vectors[v1].x);
     const y = parseInt(vectors[v0].y) + parseInt(vectors[v1].y);
 
-    newVector(x, y);
-}
-
-const vectorsAdditionOperator = (command) => {
-    const [v0, v1] = command.split('+');
-
-    if (!vectors[v0] || !vectors[v1]) {
-        return;
-    }
-
-    const x = parseInt(vectors[v0].x) + parseInt(vectors[v1].x);
-    const y = parseInt(vectors[v0].y) + parseInt(vectors[v1].y);
-
-    newVector(x, y);
+    newVector(x, y, vectorName);
 }
 
 const vectorsSubtraction = (command) => {
-    const [v0, v1] = command.split(',');
+    let [vectorName, expression] = command.split('=');
+
+    vectorName = vectorName.replace(new RegExp(`(\\s)`, 'g'), '');
+    const [v0, v1] = expression.split('-');
 
     if (!vectors[v0] || !vectors[v1]) {
         return;
@@ -50,34 +53,44 @@ const vectorsSubtraction = (command) => {
     const x = parseInt(vectors[v0].x) - parseInt(vectors[v1].x);
     const y = parseInt(vectors[v0].y) - parseInt(vectors[v1].y);
 
-    newVector(x, y);
+    newVector(x, y, vectorName);
 }
 
-const vectorsSubtractionOperator = (command) => {
-    const [v0, v1] = command.split('-');
+
+const vectorsMultiplication = (command) => {
+    let [vectorName, expression] = command.split('=');
+
+    vectorName = vectorName.replace(new RegExp(`(\\s)`, 'g'), '');
+    const [v0, v1] = expression.split('.*');
 
     if (!vectors[v0] || !vectors[v1]) {
         return;
     }
 
-    const x = parseInt(vectors[v0].x) - parseInt(vectors[v1].x);
-    const y = parseInt(vectors[v0].y) - parseInt(vectors[v1].y);
+    const x = parseInt(vectors[v0].x) * parseInt(vectors[v1].x);
+    const y = parseInt(vectors[v0].y) * parseInt(vectors[v1].y);
 
-    newVector(x, y);
+    newVector(x, y, vectorName);
 }
 
-const vectorsScaling = (command) => {
-    const [v0, scalar] = command.split(',');
+const vectorsScalingNew = (command) => {
+    let [vectorName, expression] = command.split('=');
+
+    vectorName = vectorName.replace(new RegExp(`(\\s)`, 'g'), '');
+
+    const [v0, scalar] = expression.split('*');
 
     if (!vectors[v0]) {
         return;
     }
 
-    vectors[v0].x *= scalar;
-    vectors[v0].y *= scalar;
+    const x = parseInt(vectors[v0].x) * scalar;
+    const y = parseInt(vectors[v0].y) * scalar;
+
+    newVector(x, y, vectorName);
 }
 
-const vectorsScalingOperator = (command) => {
+const vectorsScaling = (command) => {
     const [v0, scalar] = command.split('*');
 
     if (!vectors[v0]) {
@@ -88,29 +101,32 @@ const vectorsScalingOperator = (command) => {
     vectors[v0].y *= scalar;
 }
 
+const dotProduct = (command) => {
+    const [v0, v1] = command.split('*');
+
+    if (!vectors[v0] || !vectors[v1]) {
+        return;
+    }
+
+    const x = parseInt(vectors[v0].x) * parseInt(vectors[v1].x);
+    const y = parseInt(vectors[v0].y) * parseInt(vectors[v1].y);
+
+    output.value += `${x+y}\n`;
+}
+
 
 /*************************************************/
 
-/*
-const commonPatterns = {
-    vn: `(v)([0-9]+)`
-};
-*/
-
 const patterns = [
     {
-        // Create vector
-        pattern: new RegExp(`(v+)(\\s*)(\\()(\\s*)(-*)([0-9]+)(.*)([0-9]*)(\\s*)(,)(\\s*)(-*)([0-9]+)(.*)([0-9]*)(\\s*)(\\))`),
-        remove: [
-            new RegExp(`(\\s)`, 'g'), 
-            new RegExp(`(v+)(\\s*)(\\()`),
-            new RegExp(`(\\))`)
-        ],
+        // Create vector - example: v1 = [2 5]
+        pattern: new RegExp(`([a-z]+)([a-z0-9]*)(\\s*)(=)(\\s*)(\\[)(\\s*)(-*)([0-9]+)(.*)([0-9]*)(\\s+)(-*)([0-9]+)(.*)([0-9]*)(\\s*)(\\])`),
+        remove: [],
         handleFunction: vectorCreate
     },
     {
-        // Delete vector
-        pattern: new RegExp(`(del)(\\s+)(v)([0-9]+)`),
+        // Delete vector - example: del v1
+        pattern: new RegExp(`(del)(\\s+)([a-z]+)([a-z0-9]*)`),
         remove: [
             new RegExp(`(\\s)`, 'g'),
             new RegExp(`(del)`)
@@ -118,58 +134,53 @@ const patterns = [
         handleFunction: vectorDelete
     },
     {
-        // Vectors addition - add
-        pattern: new RegExp(`(add)(\\s*)(\\()(\\s*)(v)([0-9]+)(\\s*)(,)(\\s*)(v)([0-9]+)(\\s*)(\\))`),
+        // Vectors addition - example: v3 = v1 + v2
+        pattern: new RegExp(`([a-z]+)([a-z0-9]*)(\\s*)(=)(\\s*)([a-z]+)([a-z0-9]*)(\\s*)(\\+)(\\s*)([a-z]+)([a-z0-9]*)(\\s*)`),
         remove: [
             new RegExp(`(\\s)`, 'g'),
-            new RegExp(`(add)(\\()`),
-            new RegExp(`(\\))`)
         ],
         handleFunction: vectorsAddition
     },
     {
-        // Vectors addition - plus sign (+)
-        pattern: new RegExp(`(v)([0-9]+)(\\s*)(\\+)(\\s*)(v)([0-9]+)(\\s*)`),
+        // Vectors subtraction - example: v3 = v1 - v2
+        pattern: new RegExp(`([a-z]+)([a-z0-9]*)(\\s*)(=)(\\s*)([a-z]+)([a-z0-9]*)(\\s*)(\\-)(\\s*)([a-z]+)([a-z0-9]*)(\\s*)`),
         remove: [
             new RegExp(`(\\s)`, 'g'),
-        ],
-        handleFunction: vectorsAdditionOperator
-    },
-    {
-        // Vectors subtraction
-        pattern: new RegExp(`(sub)(\\s*)(\\()(\\s*)(v)([0-9]+)(\\s*)(,)(\\s*)(v)([0-9]+)(\\s*)(\\))`),
-        remove: [
-            new RegExp(`(\\s)`, 'g'),
-            new RegExp(`(sub)(\\()`),
-            new RegExp(`(\\))`)
         ],
         handleFunction: vectorsSubtraction
     },
     {
-        // Vectors subtraction - minus sign (-)
-        pattern: new RegExp(`(v)([0-9]+)(\\s*)(\\-)(\\s*)(v)([0-9]+)(\\s*)`),
+        // Vectors multiplication - example: v3 = v1 .* v2
+        pattern: new RegExp(`([a-z]+)([a-z0-9]*)(\\s*)(=)(\\s*)([a-z]+)([a-z0-9]*)(\\s*)(\\.\\*)(\\s*)([a-z]+)([a-z0-9]*)(\\s*)`),
         remove: [
             new RegExp(`(\\s)`, 'g'),
         ],
-        handleFunction: vectorsSubtractionOperator
+        handleFunction: vectorsMultiplication
     },
     {
-        // Vector scaling
-        pattern: new RegExp(`(scale)(\\s*)(\\()(\\s*)(v)([0-9]+)(\\s*)(,)(\\s*)(-*)([0-9]+)(.*)([0-9]*)(\\s*)(\\))`),
+        // Vectors scaling - new vector - example: v3 = v1 * 2
+        pattern: new RegExp(`([a-z]+)([a-z0-9]*)(\\s*)(=)(\\s*)([a-z]+)([a-z0-9]*)(\\s*)(\\*)(\\s*)([0-9]+)(.*)([0-9]*)(\\s*)`),
         remove: [
             new RegExp(`(\\s)`, 'g'),
-            new RegExp(`(scale)(\\()`),
-            new RegExp(`(\\))`)
+        ],
+        handleFunction: vectorsScalingNew
+    },
+    {
+        // Vectors scaling - same vector - example: v1 * 2
+        pattern: new RegExp(`([a-z]+)([a-z0-9]*)(\\s*)(\\*)(\\s*)([0-9]+)(.*)([0-9]*)(\\s*)`),
+        remove: [
+            new RegExp(`(\\s)`, 'g'),
         ],
         handleFunction: vectorsScaling
     },
     {
-        // Vectors scaling - asterisk sign (*)
-        pattern: new RegExp(`(v)([0-9]+)(\\s*)(\\*)(\\s*)([0-9]+)(.*)([0-9]*)(\\s*)`),
+        // Dot product - example: v1 * v2 '
+        pattern: new RegExp(`([a-z]+)([a-z0-9]*)(\\s*)(\\*)(\\s*)([a-z]+)([a-z0-9]*)(\\s*)(\\')`),
         remove: [
             new RegExp(`(\\s)`, 'g'),
+            new RegExp(`(\\')`, 'g'),
         ],
-        handleFunction: vectorsScalingOperator
+        handleFunction: dotProduct
     },
 ];
 
@@ -183,6 +194,7 @@ const removeStrings = (command, remove) =>{
 
 const handleCommand = (command) => {
     command = command.trim();
+    output.value += `${command}\n`;
 
     patterns.map(({pattern, remove, handleFunction}) => {
         const results = pattern.test(command);
@@ -198,14 +210,15 @@ const handleCommand = (command) => {
 // DOM content loaded
 document.addEventListener('DOMContentLoaded', () => {
     commands = [
-        //'v(3,5)',
-        //'v(-5,2)',
-        //'add(v0,v1)',
-        //'v0+v1',
-        //'sub(v0,v1)',
-        //'v0-v1',
-        //'scale(v0,-2)',
+        `v1 = [1 2]`,
+        `v2 = [-2 3]`,
+        `v3 = v1 + v2`,
+        `v4 = v1 - v2`,
+        `v5 = v1 * 0.5`,
+        `v2 * 0.5`,
+        `v1 * v2 '`,
+        `v3 = v1 .* v2`,
     ].map(command => {
-        handleCommand(command);
+        // handleCommand(command);
     });
 })

@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 /*****************************************************/
-
+/*
 const v = (x, y) => {
   const vectorName = `v${vectorCounter}`;
   vectors[vectorName] = new Vector(x, y, vectorName);
@@ -61,3 +61,4 @@ const sub = (v0, v1) => {
   const y = v0.y - v1.y;
   v(x, y);
 }
+*/

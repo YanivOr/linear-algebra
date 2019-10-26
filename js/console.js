@@ -8,13 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.keyCode === 13) {
             const command = event.target.value;
             event.target.value = null;
-
-            try {
-                eval(command);
-            }
-            catch (e) {
-                console.log(e);
-            }
+            handleCommand(command);
         }
     });
 

@@ -27,8 +27,34 @@ const vectorsAddition = (command) => {
     newVector(x, y);
 }
 
+const vectorsAdditionOperator = (command) => {
+    const [v0, v1] = command.split('+');
+
+    if (!vectors[v0] || !vectors[v1]) {
+        return;
+    }
+
+    const x = parseInt(vectors[v0].x) + parseInt(vectors[v1].x);
+    const y = parseInt(vectors[v0].y) + parseInt(vectors[v1].y);
+
+    newVector(x, y);
+}
+
 const vectorsSubtraction = (command) => {
     const [v0, v1] = command.split(',');
+
+    if (!vectors[v0] || !vectors[v1]) {
+        return;
+    }
+
+    const x = parseInt(vectors[v0].x) - parseInt(vectors[v1].x);
+    const y = parseInt(vectors[v0].y) - parseInt(vectors[v1].y);
+
+    newVector(x, y);
+}
+
+const vectorsSubtractionOperator = (command) => {
+    const [v0, v1] = command.split('-');
 
     if (!vectors[v0] || !vectors[v1]) {
         return;
@@ -50,6 +76,18 @@ const vectorsScaling = (command) => {
     vectors[v0].x *= scalar;
     vectors[v0].y *= scalar;
 }
+
+const vectorsScalingOperator = (command) => {
+    const [v0, scalar] = command.split('*');
+
+    if (!vectors[v0]) {
+        return;
+    }
+
+    vectors[v0].x *= scalar;
+    vectors[v0].y *= scalar;
+}
+
 
 /*************************************************/
 
@@ -80,7 +118,7 @@ const patterns = [
         handleFunction: vectorDelete
     },
     {
-        // Vectors addition
+        // Vectors addition - add
         pattern: new RegExp(`(add)(\\s*)(\\()(\\s*)(v)([0-9]+)(\\s*)(,)(\\s*)(v)([0-9]+)(\\s*)(\\))`),
         remove: [
             new RegExp(`(\\s)`, 'g'),
@@ -88,6 +126,14 @@ const patterns = [
             new RegExp(`(\\))`)
         ],
         handleFunction: vectorsAddition
+    },
+    {
+        // Vectors addition - plus sign (+)
+        pattern: new RegExp(`(v)([0-9]+)(\\s*)(\\+)(\\s*)(v)([0-9]+)(\\s*)`),
+        remove: [
+            new RegExp(`(\\s)`, 'g'),
+        ],
+        handleFunction: vectorsAdditionOperator
     },
     {
         // Vectors subtraction
@@ -100,6 +146,14 @@ const patterns = [
         handleFunction: vectorsSubtraction
     },
     {
+        // Vectors subtraction - minus sign (-)
+        pattern: new RegExp(`(v)([0-9]+)(\\s*)(\\-)(\\s*)(v)([0-9]+)(\\s*)`),
+        remove: [
+            new RegExp(`(\\s)`, 'g'),
+        ],
+        handleFunction: vectorsSubtractionOperator
+    },
+    {
         // Vector scaling
         pattern: new RegExp(`(scale)(\\s*)(\\()(\\s*)(v)([0-9]+)(\\s*)(,)(\\s*)(-*)([0-9]+)(.*)([0-9]*)(\\s*)(\\))`),
         remove: [
@@ -108,7 +162,15 @@ const patterns = [
             new RegExp(`(\\))`)
         ],
         handleFunction: vectorsScaling
-    }
+    },
+    {
+        // Vectors scaling - asterisk sign (*)
+        pattern: new RegExp(`(v)([0-9]+)(\\s*)(\\*)(\\s*)([0-9]+)(.*)([0-9]*)(\\s*)`),
+        remove: [
+            new RegExp(`(\\s)`, 'g'),
+        ],
+        handleFunction: vectorsScalingOperator
+    },
 ];
 
 const removeStrings = (command, remove) =>{
@@ -136,11 +198,13 @@ const handleCommand = (command) => {
 // DOM content loaded
 document.addEventListener('DOMContentLoaded', () => {
     commands = [
-        'v(3,5)',
-        'v(-5,2)',
-        'add(v0,v1)',
-        'sub(v0,v1)',
-        'scale(v0,-2)',
+        //'v(3,5)',
+        //'v(-5,2)',
+        //'add(v0,v1)',
+        //'v0+v1',
+        //'sub(v0,v1)',
+        //'v0-v1',
+        //'scale(v0,-2)',
     ].map(command => {
         handleCommand(command);
     });

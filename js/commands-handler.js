@@ -114,6 +114,19 @@ const dotProduct = (command) => {
     output.value += `${x+y}\n`;
 }
 
+const norm = (command) => {
+    const v0 = command;
+
+    if (!vectors[v0]) {
+        return;
+    }
+
+    const x = parseInt(vectors[v0].x) * parseInt(vectors[v0].x);
+    const y = parseInt(vectors[v0].y) * parseInt(vectors[v0].y);
+
+    output.value += `${Math.sqrt(x+y)}\n`;
+}
+
 
 /*************************************************/
 
@@ -182,6 +195,16 @@ const patterns = [
         ],
         handleFunction: dotProduct
     },
+    {
+        // Vector length. norm - example: norm(v1)
+        pattern: new RegExp(`(norm)(\\s*)(\\()(\\s*)([a-z]+)([a-z0-9]*)(\\s*)(\\))`),
+        remove: [
+            new RegExp(`(\\s)`, 'g'),
+            new RegExp(`(norm)(\\()`),
+            new RegExp(`(\\))`),
+        ],
+        handleFunction: norm
+    },
 ];
 
 const removeStrings = (command, remove) =>{
@@ -209,16 +232,19 @@ const handleCommand = (command) => {
 
 // DOM content loaded
 document.addEventListener('DOMContentLoaded', () => {
+    /** /
     commands = [
         `v1 = [1 2]`,
         `v2 = [-2 3]`,
         `v3 = v1 + v2`,
         `v4 = v1 - v2`,
         `v5 = v1 * 0.5`,
-        `v2 * 0.5`,
+        `v2 * 1.5`,
         `v1 * v2 '`,
         `v3 = v1 .* v2`,
+        `norm(v3)`,
     ].map(command => {
-        // handleCommand(command);
+        handleCommand(command);
     });
+    /**/
 })

@@ -93,9 +93,6 @@ const vectorsScalingNew = (command) => {
 const vectorsScaling = (command) => {
     const [v0, scalar] = command.split('*');
 
-    console.log(vectors[v0]);
-    console.log(scalar);
-
     if (!vectors[v0]) {
         return;
     }

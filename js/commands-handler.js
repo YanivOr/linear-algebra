@@ -172,7 +172,7 @@ const patterns = [
     },
     {
         // Vectors scaling - new vector - example: v3 = v1 * 2
-        pattern: new RegExp(`([a-z]+)([a-z0-9]*)(\\s*)(=)(\\s*)([a-z]+)([a-z0-9]*)(\\s*)(\\*)(\\s*)([-]+)([0-9]+)(.*)([0-9]*)(\\s*)`),
+        pattern: new RegExp(`([a-z]+)([a-z0-9]*)(\\s*)(=)(\\s*)([a-z]+)([a-z0-9]*)(\\s*)(\\*)(\\s*)([-]*)([0-9]+)(.*)([0-9]*)(\\s*)`),
         remove: [
             new RegExp(`(\\s)`, 'g'),
         ],

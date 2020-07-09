@@ -93,6 +93,9 @@ const vectorsScalingNew = (command) => {
 const vectorsScaling = (command) => {
     const [v0, scalar] = command.split('*');
 
+    console.log(vectors[v0]);
+    console.log(scalar);
+
     if (!vectors[v0]) {
         return;
     }
@@ -172,7 +175,7 @@ const patterns = [
     },
     {
         // Vectors scaling - new vector - example: v3 = v1 * 2
-        pattern: new RegExp(`([a-z]+)([a-z0-9]*)(\\s*)(=)(\\s*)([a-z]+)([a-z0-9]*)(\\s*)(\\*)(\\s*)([0-9]+)(.*)([0-9]*)(\\s*)`),
+        pattern: new RegExp(`([a-z]+)([a-z0-9]*)(\\s*)(=)(\\s*)([a-z]+)([a-z0-9]*)(\\s*)(\\*)(\\s*)([-]+)([0-9]+)(.*)([0-9]*)(\\s*)`),
         remove: [
             new RegExp(`(\\s)`, 'g'),
         ],
@@ -180,7 +183,7 @@ const patterns = [
     },
     {
         // Vectors scaling - same vector - example: v1 * 2
-        pattern: new RegExp(`([a-z]+)([a-z0-9]*)(\\s*)(\\*)(\\s*)([0-9]+)(.*)([0-9]*)(\\s*)`),
+        pattern: new RegExp(`([a-z]+)([a-z0-9]*)(\\s*)(\\*)(\\s*)([-]*)([0-9]+)(.*)([0-9]*)(\\s*)`),
         remove: [
             new RegExp(`(\\s)`, 'g'),
         ],
